@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестовое приложение</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result, #errors {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="start-container">
+        <h1>Тестовое приложение</h1>
+        <input type="text" id="userName" placeholder="Введите ваше ФИО">
+        <button onclick="startTest()">Начать тест</button>
+    </div>
+
+    <div class="container" id="question-container" style="display:none;">
+        <p id="question">Вопрос</p>
+        <img id="questionImage" src="" alt="" style="display:none;">
+        <button onclick="answer(1)" id="option1">Вариант 1</button>
+        <button onclick="answer(2)" id="option2">Вариант 2</button>
+        <button onclick="answer(3)" id="option3">Вариант 3</button>
+        <button onclick="answer(4)" id="option4">Вариант 4</button>
+    </div>
+
+    <div class="container" id="result-container" style="display:none;">
+        <h2>Ваш результат</h2>
+        <p id="score">Правильные ответы: 0</p>
+        <p id="errors">Ошибки:</p>
+    </div>
+
+    <script>
+        const quizData = [
+            { 
+                question: "Что делать при нарушении этики?",
+                image: "https://via.placeholder.com/300", // Ссылка на картинку
+                options: ["Игнорировать", "Сообщить HR", "Пожаловаться коллеге", "Опубликовать в соцсетях"],
+                correct: 2,
+                errorAnalysis: "Сообщите HR для соблюдения правил компании."
+            },
+            { 
+                question: "Сколько дней больничного разрешено?",
+                image: "", // Пустая строка если нет картинки
+                options: ["5 дней", "10 дней", "15 дней", "Зависит от стажа"],
+                correct: 1,
+                errorAnalysis: "В политике компании указывается 5 дней."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let errors = [];
+        let userName = "";
+
+        const startContainer = document.getElementById("start-container");
+        const questionContainer = document.getElementById("question-container");
+        const resultContainer = document.getElementById("result-container");
+
+        const questionElement = document.getElementById("question");
+        const questionImage = document.getElementById("questionImage");
+        const scoreElement = document.getElementById("score");
+        const errorsElement = document.getElementById("errors");
+
+        function startTest() {
+            userName = document.getElementById("userName").value.trim();
+            if (!userName) {
+                alert("Пожалуйста, введите ваше ФИО!");
+                return;
+            }
+            startContainer.style.display = "none";
+            questionContainer.style.display = "block";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+
+            // Загрузка картинки
+            if (currentQuestion.image) {
+                questionImage.src = currentQuestion.image;
+                questionImage.style.display = "block";
+            } else {
+                questionImage.style.display = "none";
+            }
+
+            // Обновление вариантов ответов
+            document.getElementById("option1").textContent = currentQuestion.options[0];
+            document.getElementById("option2").textContent = currentQuestion.options[1];
+            document.getElementById("option3").textContent = currentQuestion.options[2];
+            document.getElementById("option4").textContent = currentQuestion.options[3];
+        }
+
+        function answer(option) {
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            if (option === currentQuestion.correct) {
+                score++;
+            } else {
+                errors.push(`Вопрос ${currentQuestionIndex + 1}: ${currentQuestion.errorAnalysis}`);
+            }
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            questionContainer.style.display = "none";
+            resultContainer.style.display = "block";
+
+            scoreElement.textContent = `ФИО: ${userName}\nПравильные ответы: ${score}`;
+            errorsElement.innerHTML = "Ошибки:<br>" + errors.join("<br>");
+        }
+    </script>
+</body>
+</html>
